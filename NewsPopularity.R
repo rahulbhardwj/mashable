@@ -73,3 +73,33 @@ val.predictions <- predict(linear.regression.updated, x_val_data)
 result <- postResample(val.predictions, y_val_data)
 result
 mape(y_val_data, val.predictions)
+
+
+# Starting KNN
+
+# Recoding weekdays in a single variable
+news_data$day <- ifelse(news_data$weekday_is_monday == "1", 2, ifelse(news_data$weekday_is_tuesday == "1", 3, 
+                 ifelse(news_data$weekday_is_wednesday== "1", 4, ifelse(news_data$weekday_is_thursday== "1", 5, 
+                 ifelse(news_data$weekday_is_friday== "1", 6, ifelse(news_data$weekday_is_saturday== "1", 7, 1))))))
+
+# Recoding column datatypes as numeric for KNN
+news_data$data_channel_is_lifestyle <- as.numeric(news_data$data_channel_is_lifestyle)
+news_data$data_channel_is_entertainment <- as.numeric(news_data$data_channel_is_entertainment)
+news_data$data_channel_is_bus <- as.numeric(news_data$data_channel_is_bus)
+news_data$data_channel_is_socmed <- as.numeric(news_data$data_channel_is_socmed)
+news_data$data_channel_is_tech <- as.numeric(news_data$data_channel_is_tech)
+news_data$data_channel_is_world <- as.numeric(news_data$data_channel_is_world)
+news_data$is_weekend <- as.numeric(news_data$is_weekend)
+news_data$day <- as.numeric(news_data$day)
+
+# Recoding DV into a categorical varibale
+news_data$shares <- ifelse(news_data$shares < 500, "L", ifelse(news_data$shares < 1400, "M", "H"))
+
+#Running knn (with k=1) 
+#Making predictions 
+
+y_pred <- knn(train = train_data, test = x_val,cl = y_tr, k=1)
+
+#Model evaluation: Confusion matrix
+
+confusionMatrix(y_pred, as.factor(y_val), positive = "1")
